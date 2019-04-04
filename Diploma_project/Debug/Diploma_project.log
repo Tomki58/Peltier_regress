@@ -1,0 +1,5 @@
+﻿  FunctionHandler.cpp
+  main.cpp
+c:\users\admin\source\repos\diploma_project\diploma_project\main.cpp(210): warning C4018: <: несоответствие типов со знаком и без знака
+  Создание кода...
+  Diploma_project.vcxproj -> C:\Users\Admin\source\repos\Diploma_project\Debug\Diploma_project.exe
