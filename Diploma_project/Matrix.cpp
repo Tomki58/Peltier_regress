@@ -1,8 +1,5 @@
 #include "Matrix.h"
 
-// TODO:
-// сохранение матрицы в файл + сохранение коэффициентов в файл
-
 Matrix_Plan::Matrix_Plan(unsigned int var_count) 
 {
 	// определение размерности матрицы
@@ -17,9 +14,9 @@ Matrix_Plan::Matrix_Plan(unsigned int var_count)
 	this->exp_results.resize(lines, 0.0);
 
 	// инициализация значений внутри матрицы
-	for (int i{ 0 }; i < lines; i++) (*this)(i, 0) = 1.0; // инициализация X0 единицами
+	for (int i = 0; i < lines; i++) (*this)(i, 0) = 1.0; // инициализация X0 единицами
 	int j = 0;
-	for (int i{ 1 }; i <= var_count; i++, j = 0)
+	for (int i = 1; i <= var_count; i++, j = 0)
 		while (j < core_points)
 		{
 			int gap = static_cast<int>(pow(2, i - 1));
@@ -141,7 +138,7 @@ void Matrix_Plan::count()
 			coeffs.at(i).first = A / lines * (2 * pow(lambda, 2) * (k + 2) * sums.at(11) -
 				2 * lambda * c * (sums.at(8) + sums.at(9) + sums.at(10)));
 		else if (i > 0 && i < 4)
-			coeffs.at(i).first = c / lines * sums.at(i);
+			coeffs.at(i).first = (c / lines) * sums.at(i);
 		else if (i >= 4 && i < 7)
 			coeffs.at(i).first = pow(c, 2) / (lines * lambda) * (sums.at(i));
 		else if (i >= 8 && i < columns)
@@ -150,7 +147,7 @@ void Matrix_Plan::count()
 				- 2 * lambda * c * sums.at(11));
 }
 
-void Matrix_Plan::assessment()
+bool Matrix_Plan::assessment()
 {
 	auto sum_zero_points = std::accumulate(exp_results.begin() + 14, exp_results.end(), 0.0);
 	auto average = sum_zero_points / zero_points;
@@ -213,11 +210,12 @@ void Matrix_Plan::assessment()
 
 	// Подсчет Sад
 	double Sad = (Sr - Se) / (lines - k_ind - (zero_points - 1));		// степени свободы в числителе
-
 	double Fp = Sad / Sy;
 
 	// сравнение со значениями из таблицы критериев Фишера
+	double Ft = Matrix_Plan::fisher_table[zero_points - 1 - 1][(lines - k_ind - (zero_points - 1)) - 1];
 	// суждение об адекватности модели
+	return (Fp < Ft) ? true : false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,4 +260,28 @@ std::vector<double> Matrix_Plan::new_func_values()
 	}
 
 	return new_results;
+}
+
+double Matrix_Plan::fisher_table[20][11];
+
+void Matrix_Plan::fill_table(FILEPATH path)
+{
+	fstream file;
+	file.open(path, std::fstream::in);
+	std::string buf;
+	int i = 0;
+	
+	while (std::getline(file, buf))
+	{
+		std::stringstream buf_stream(buf);
+		std::string value;
+		int j = 0;
+		while (std::getline(buf_stream, value, ';'))
+		{
+			for (auto& ch : value)
+				if (ch == ',') ch = '.';
+			Matrix_Plan::fisher_table[i][j++] = std::atof(value.c_str());
+		}
+		++i;
+	}
 }

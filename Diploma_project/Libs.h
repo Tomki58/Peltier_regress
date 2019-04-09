@@ -12,6 +12,7 @@
 #include <sstream>
 #include <Windows.h>
 #include <stdio.h>
+#include <CommCtrl.h>
 
 // Заголовочные файлы библиотеки ROOT/////
 //////////////////////////////////////////

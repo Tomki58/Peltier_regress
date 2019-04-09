@@ -1,6 +1,8 @@
 #include "Libs.h"
 #include "FileHandler.h"
 
+using FILEPATH = std::string;
+
 #pragma once
 
 class Matrix_Plan
@@ -23,6 +25,8 @@ private:
 	std::vector<double> disp;											// значения дисперсий
 	std::vector<double> trust_intrv;									// абсолютные значения доверительных интервалов
 
+	static double fisher_table[20][11];
+
 	// локальные функции
 	std::vector<double> new_func_values();
 public:
@@ -33,7 +37,8 @@ public:
 	bool read_from_file(FileHandler&);
 	void print();														// вывод матрицы на печать
 	void count();														// подсчет коэффициентов
-	void assessment();													// оценка модели
+	bool assessment();													// оценка модели
 	// Дебажные методы
 	double get_value(double x, double deltaT, double Th);
+	static void fill_table(FILEPATH);
 };
