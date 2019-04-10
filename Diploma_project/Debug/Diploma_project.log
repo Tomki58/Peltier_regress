@@ -1,15 +1,6 @@
-﻿  FileHandler.cpp
-  FunctionHandler.cpp
-  main.cpp
-c:\users\admin\documents\github\peltier_regress\diploma_project\main.cpp(204): warning C4018: <: несоответствие типов со знаком и без знака
-  MainWindow.cpp
-c:\users\admin\documents\github\peltier_regress\diploma_project\mainwindow.cpp(12): warning C4101: handler: неиспользованная локальная переменная
-  Matrix.cpp
-c:\users\admin\documents\github\peltier_regress\diploma_project\matrix.cpp(6): warning C4244: =: преобразование "double" в "int", возможна потеря данных
-c:\users\admin\documents\github\peltier_regress\diploma_project\matrix.cpp(19): warning C4018: <=: несоответствие типов со знаком и без знака
-c:\users\admin\documents\github\peltier_regress\diploma_project\matrix.cpp(68): warning C4018: >=: несоответствие типов со знаком и без знака
-c:\users\admin\documents\github\peltier_regress\diploma_project\matrix.cpp(190): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\admin\documents\github\peltier_regress\diploma_project\matrix.cpp(255): warning C4018: <: несоответствие типов со знаком и без знака
-  Создание кода...
-c:\users\admin\documents\github\peltier_regress\diploma_project\mainwindow.cpp(130): warning C4715: MainWindow::childProc: значение возвращается не при всех путях выполнения
+﻿  FunctionHandler.cpp
+c:\users\admin\documents\github\peltier_regress\diploma_project\functionhandler.cpp(24): warning C4244: инициализация: преобразование "double" в "int", возможна потеря данных
+c:\users\admin\documents\github\peltier_regress\diploma_project\functionhandler.cpp(39): warning C4244: аргумент: преобразование "double" в "Int_t", возможна потеря данных
+c:\users\admin\documents\github\peltier_regress\diploma_project\functionhandler.cpp(43): warning C4244: аргумент: преобразование "double" в "Int_t", возможна потеря данных
+c:\users\admin\documents\github\peltier_regress\diploma_project\functionhandler.cpp(47): warning C4244: аргумент: преобразование "double" в "Int_t", возможна потеря данных
   Diploma_project.vcxproj -> C:\Users\Admin\Documents\GitHub\Peltier_regress\Debug\Diploma_project.exe

@@ -4,8 +4,6 @@ std::vector<LPCSTR> MainWindow::labelText{"Current File", "Votage File", "Qc min
 bool MainWindow::crt = true;
 constexpr int OK_BUTTON = 3001;
 
-// TODO: подсоединить к основному проекту
-
 LRESULT CALLBACK MainWindow::MessageRouter(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	MainWindow *mainWnd;

@@ -109,18 +109,18 @@ LRESULT CALLBACK WndProc(
 		// Обработка нажатия на кнопку Graph
 		case GRAPH_BUTTON_ID:
 		{
-			FileHandler fh_current(FILE_PATH);
+			FileHandler fh_current(options.at(0));
 			Matrix_Plan mtrx_current{ 3 };
 			mtrx_current.read_from_file(fh_current);
 			mtrx_current.count();
 			mtrx_current.assessment();
 			Matrix_Plan mtrx_voltage{ 3 };
-			FileHandler fh_voltage("C:\\AppData\\Voltage.csv");
+			FileHandler fh_voltage(options.at(1));
 			mtrx_voltage.read_from_file(fh_voltage);
 			mtrx_voltage.count();
 			mtrx_voltage.assessment();
 
-			FunctionHandler *hFnc = new FunctionHandler{ {mtrx_current, mtrx_voltage} };
+			FunctionHandler *hFnc = new FunctionHandler{ {mtrx_current, mtrx_voltage}, options };
 			hFnc->initialize_graphs(tAPP);
 		}
 		break;
