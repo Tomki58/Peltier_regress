@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 
-std::vector<LPCSTR> MainWindow::labelText{"Current File", "Votage File", "Qc min", "Qc max", "dT", "Th"};
+std::vector<LPCSTR> MainWindow::labelText{"Current File", "Votage File", "Qc max", "dT", "Th"};
+std::vector<std::string> MainWindow::options;
 bool MainWindow::crt = true;
 constexpr int OK_BUTTON = 3001;
 
@@ -24,13 +25,13 @@ LRESULT CALLBACK MainWindow::thisWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 {
 	int yPos = 10;
 	LPSTR bufStr;
-	MainWindow::crt = true;
 
 	switch (msg)
 	{
 	case WM_CREATE:
 	{
-		for (; yPos <= 160; yPos += 30)
+		crt = false;
+		for (; yPos <= 130; yPos += 30)
 		{
 			HWND handler;
 			handler = CreateWindow("Edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER, 10, yPos, 200, 20, hWnd, NULL,
@@ -41,6 +42,14 @@ LRESULT CALLBACK MainWindow::thisWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 		CreateWindow("Button", "OK", WS_VISIBLE | BS_DEFPUSHBUTTON | WS_CHILD, 220, yPos + 50, 50, 20, hWnd, (HMENU)OK_BUTTON, GetModuleHandle(NULL), NULL);
 		for (auto hdl : {EditHandlers.at(0), EditHandlers.at(1)})
 			SetWindowSubclass(hdl, childProc, 0, 0);
+
+		if (!MainWindow::options.empty())
+		{
+			for (int i = 0; i < EditHandlers.size(); i++)
+			{
+				SetWindowText(EditHandlers.at(i), MainWindow::options.at(i).c_str());
+			}
+		}
 		break;
 	}
 	case WM_COMMAND:
@@ -57,8 +66,21 @@ LRESULT CALLBACK MainWindow::thisWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 				options.push_back(bufStr);
 				delete[] bufStr;
 			}
-			if (std::count_if(options.begin(), options.end(), [](std::string& str) {return str.empty(); }) != 0)
-				crt = false;
+			if (std::count_if(options.begin(), options.end(), [](std::string& str) {return str.empty(); }) == 0)
+			{
+				crt = (checkFile(options.at(0)) && checkFile(options.at(1))) ? true : false;
+			}
+			else crt = false;
+
+			//if (checkFile(options.at(0)) && checkFile(options.at(1)))
+			//	MessageBox(hWnd, "Ok", NULL, NULL);
+
+			/*std::string bufString;																				// Использовать в качестве проверки
+																													// правильности формата файла
+			for (auto it = options.at(0).rbegin(); it - options.at(0).rbegin() < 3; it++)							// в дальнейшем для вызова оцифровщика
+				bufString += *it;																					//
+			if (bufString == "vsc") MessageBox(hWnd, "Correct", "HEH", NULL);*/										//
+
 			crt ? DestroyWindow(hWnd) : MessageBox(hWnd, "Fill all fields", "Error", NULL);
 		}
 			break;
@@ -68,6 +90,7 @@ LRESULT CALLBACK MainWindow::thisWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 	break;
 	case WM_DESTROY:
 	{
+		if (!crt) MainWindow::options.clear();
 		PostQuitMessage(0);
 		break;
 	}
@@ -104,7 +127,7 @@ MainWindow::MainWindow(HINSTANCE hInstance, LPCTSTR className)
 	wcWindowClass.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE;
 	RegisterClass(&wcWindowClass);
 
-	hWnd = CreateWindow(className, "Options", WS_VISIBLE | WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 400, 600, NULL, NULL, hInstance, this);
+	hWnd = CreateWindow(className, "Options", WS_VISIBLE | WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 400, 300, NULL, NULL, hInstance, this);
 }
 
 MainWindow::~MainWindow()
@@ -145,4 +168,18 @@ LPSTR MainWindow::getFileName(HWND hWnd)
 	opf.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
 	return GetOpenFileName(&opf) == TRUE ? opf.lpstrFile : nullptr;
+}
+
+//std::string MainWindow::getFileFormat(std::string file)
+//{
+//	if (file.size)
+//}
+
+bool MainWindow::checkFile(std::string filePath)
+{
+	std::regex reg("[A-Z]:(\\\\+[A-Za-z]*)*\\\\+[a-zA-Z]+\\.[a-zA-Z]+");
+	std::smatch match;
+	std::regex_search(filePath, match, reg);
+
+	return (match[0] == filePath) ? true : false;
 }

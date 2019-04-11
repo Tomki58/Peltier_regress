@@ -6,18 +6,20 @@
 #pragma comment(lib, "ComCtl32.Lib")
 
 constexpr int GRAPH_BUTTON_ID = 3001;
-constexpr int BROWSE_BUTTON_ID = 3002;
-constexpr int IDC_LISTVIEW_ID = 3003;
+constexpr int OPTIONS_BUTTON_ID = 3002;
+constexpr int IDC_LISTVIEW_ID_1 = 3003;
+constexpr int IDC_LISTVIEW_ID_2 = 3004;
 constexpr LPCTSTR optWndClass = "OptWnd";
 
 static std::string FILE_PATH;
 static std::vector<std::string> options;
 
+static const char* header[] = { "Num", "Value" };
+
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 ATOM RegMyWindowClass(HINSTANCE, LPCTSTR);
 int SetListViewColumns(HWND hWndLV, int colNum, int textMaxLen, char** header);
 BOOL WINAPI AddListViewItems(HWND hWndLV, int colNum, int textMaxLen, const std::vector<std::pair<int, double>> num_value);
-std::string getFileName(HWND hWnd);
 
 
 std::unique_ptr<TApplication> tAPP(new TApplication("App", 0, 0));
@@ -49,16 +51,16 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	// создание диалогового окна
 	HWND hWnd = CreateWindow(lpzClass, TEXT("Chart"),
-		WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, screen_rect.right, screen_rect.bottom, NULL, NULL,
+		WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 500, 400, NULL, NULL,
 		hInstance, NULL);
 
 	HWND hGraphButton = CreateWindow("BUTTON", "Graph",
-		WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 10, 20, 90, 20,
+		WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON | WS_DISABLED, 400, 300, 80, 20,
 		hWnd, (HMENU)GRAPH_BUTTON_ID, hInstance, NULL);
 
-	HWND hBrowseButton = CreateWindow("BUTTON", "Browse...",
-		WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 110, 20, 90, 20,
-		hWnd, (HMENU)BROWSE_BUTTON_ID, hInstance, NULL);
+	HWND hBrowseButton = CreateWindow("BUTTON", "Options",
+		WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 400, 330, 80, 20,
+		hWnd, (HMENU)OPTIONS_BUTTON_ID, hInstance, NULL);
 
 	
 
@@ -125,30 +127,35 @@ LRESULT CALLBACK WndProc(
 		}
 		break;
 		// Обработка нажатия на кнопку Browse
-		case BROWSE_BUTTON_ID:
+		case OPTIONS_BUTTON_ID:
 		{
-			/*FILE_PATH = getFileName(hWnd);
-
-			if (!FILE_PATH.empty())
-			{
-				HWND hWndLV = CreateWindow(WC_LISTVIEW, "", WS_CHILD | LVS_REPORT | WS_VISIBLE,
-					500, 200, 200, 200, hWnd, (HMENU)IDC_LISTVIEW_ID, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
-
-				ListView_SetExtendedListViewStyleEx(hWndLV, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-
-				char *header[2];
-				header[0] = const_cast<char*>("Num");
-				header[1] = const_cast<char*>("Value");
-
-
-				SetListViewColumns(hWndLV, 2, 6, header);
-				FileHandler fh_current(FILE_PATH);
-
-				AddListViewItems(hWndLV, 2, 6, fh_current.get_pair());
-			}*/
 			MainWindow mainWnd((HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), const_cast<LPCTSTR>(optWndClass));
 			mainWnd.run();
 			options = mainWnd.getOptions();
+
+			HWND childWnd = FindWindowEx(hWnd, NULL, "BUTTON", NULL);
+			EnableWindow(childWnd, TRUE);
+			if (!options.empty())
+			{
+				while (HWND hDelWnd = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL))
+					DestroyWindow(hDelWnd);
+
+				
+
+				HWND hWndLV_1 = CreateWindow(WC_LISTVIEW, "", WS_CHILD | LVS_REPORT | WS_VISIBLE,
+					10, 10, 200, 200, hWnd, (HMENU)IDC_LISTVIEW_ID_1, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+				HWND hWndLV_2 = CreateWindow(WC_LISTVIEW, "", WS_CHILD | LVS_REPORT | WS_VISIBLE,
+					250, 10, 200, 200, hWnd, (HMENU)IDC_LISTVIEW_ID_2, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+				ListView_SetExtendedListViewStyleEx(hWndLV_1, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+				ListView_SetExtendedListViewStyleEx(hWndLV_2, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+				SetListViewColumns(hWndLV_1, 2, 6, const_cast<char**>(header));
+				SetListViewColumns(hWndLV_2, 2, 6, const_cast<char**>(header));
+				FileHandler fh_listView1{ options.at(0) };
+				FileHandler fh_listView2{ options.at(1) };
+				AddListViewItems(hWndLV_1, 2, 6, fh_listView1.get_pair());
+				AddListViewItems(hWndLV_2, 2, 6, fh_listView2.get_pair());
+			}
+			else EnableWindow(childWnd, FALSE);
 		}
 		default:
 			break;
@@ -221,25 +228,4 @@ BOOL WINAPI AddListViewItems(HWND hWndLV, int colNum, int textMaxLen, const std:
 	}
 
 	return TRUE;
-}
-
-std::string getFileName(HWND hWnd)
-{
-
-	TCHAR szFile[255] = { 0 };
-
-	OPENFILENAME opf;
-	ZeroMemory(&opf, sizeof(opf));
-	opf.lStructSize = sizeof(opf);
-	opf.hwndOwner = hWnd;
-	opf.lpstrFile = szFile;
-	opf.nMaxFile = sizeof(szFile);
-	opf.lpstrFilter = ("csv\0*.csv\0");
-	opf.nFilterIndex = 2;
-	opf.lpstrFileTitle = NULL;
-	opf.nMaxFileTitle = 0;
-	opf.lpstrInitialDir = NULL;
-	opf.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
-	return GetOpenFileName(&opf) == TRUE ? opf.lpstrFile : "";
 }

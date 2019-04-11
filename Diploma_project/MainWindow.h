@@ -1,7 +1,6 @@
 #include <Windows.h>
-#include <vector>
+#include "Libs.h"
 #include <CommCtrl.h>
-#include <algorithm>
 
 #pragma comment(lib, "Comctl32.lib")
 
@@ -16,9 +15,11 @@ private:
 	static LRESULT CALLBACK childProc(HWND, UINT, WPARAM, LPARAM, UINT_PTR, DWORD_PTR);
 	HWND hWnd;
 	std::vector<HWND> EditHandlers;
-	std::vector<std::string> options;
+	static std::vector<std::string> options;
 	static std::vector<LPCSTR> labelText;
 	static LPSTR getFileName(HWND);
+	std::string getFileFormat(std::string);
+	bool checkFile(std::string);
 public:
 	MainWindow(HINSTANCE, LPCTSTR);
 	HWND getHandlerWindow() { return hWnd; }
@@ -26,4 +27,3 @@ public:
 	std::vector<std::string>& getOptions() { return options; }
 	~MainWindow();
 };
-

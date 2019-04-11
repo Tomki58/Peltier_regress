@@ -4,9 +4,8 @@
 
 
 FunctionHandler::FunctionHandler(std::initializer_list<Matrix_Plan> list, std::vector<std::string> values): matrices{list},
-Qmax{ std::atof(values.at(3).c_str()) }, deltaT{ std::atof(values.at(4).c_str()) }, Th{ std::atof(values.at(5).c_str()) }
-{
-}
+Qmax{ std::atof(values.at(2).c_str()) }, deltaT{ std::atof(values.at(3).c_str()) }, Th{ std::atof(values.at(4).c_str()) }
+{}
 
 void FunctionHandler::initialize_graphs(std::unique_ptr<TApplication>& App)
 {
@@ -37,14 +36,17 @@ void FunctionHandler::initialize_graphs(std::unique_ptr<TApplication>& App)
 
 	// Установка среды для отображения
 	TGraph *t1 = new TGraph(Qmax, x_current, y_current);
+	t1->SetTitle("Current");
 	t1->Draw();
 	
 	t11->cd(2);
 	TGraph *t2 = new TGraph(Qmax, x_current, y_voltage);
+	t2->SetTitle("Voltage");
 	t2->Draw();
 
 	t11->cd(3);
 	TGraph *t3 = new TGraph(Qmax, x_current, y_consumption);
+	t3->SetTitle("Power Consumption");
 	t3->Draw();
 
 	App->Run();

@@ -13,6 +13,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <CommCtrl.h>
+#include <regex>
 
 // Заголовочные файлы библиотеки ROOT/////
 //////////////////////////////////////////
