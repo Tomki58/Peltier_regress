@@ -14,6 +14,10 @@
 #include <stdio.h>
 #include <CommCtrl.h>
 #include <regex>
+#include "resource.h"
+#include <gdiplus.h>
+#include <gdiplusgraphics.h>
+#include <gdiplusheaders.h>
 
 // Заголовочные файлы библиотеки ROOT/////
 //////////////////////////////////////////

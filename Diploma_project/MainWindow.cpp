@@ -69,17 +69,13 @@ LRESULT CALLBACK MainWindow::thisWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPA
 			if (std::count_if(options.begin(), options.end(), [](std::string& str) {return str.empty(); }) == 0)
 			{
 				crt = (checkFile(options.at(0)) && checkFile(options.at(1))) ? true : false;
+				if (getFileFormat(options.at(0)) == "png")
+				{
+					DigitizerWindow digWnd(GetModuleHandle(NULL), "DigWnd", options.at(0));
+					options.at(0) = digWnd.run();
+				}
 			}
 			else crt = false;
-
-			//if (checkFile(options.at(0)) && checkFile(options.at(1)))
-			//	MessageBox(hWnd, "Ok", NULL, NULL);
-
-			/*std::string bufString;																				// Использовать в качестве проверки
-																													// правильности формата файла
-			for (auto it = options.at(0).rbegin(); it - options.at(0).rbegin() < 3; it++)							// в дальнейшем для вызова оцифровщика
-				bufString += *it;																					//
-			if (bufString == "vsc") MessageBox(hWnd, "Correct", "HEH", NULL);*/										//
 
 			crt ? DestroyWindow(hWnd) : MessageBox(hWnd, "Fill all fields", "Error", NULL);
 		}
@@ -160,7 +156,7 @@ LPSTR MainWindow::getFileName(HWND hWnd)
 	opf.hwndOwner = hWnd;
 	opf.lpstrFile = szFile;
 	opf.nMaxFile = sizeof(szFile);
-	opf.lpstrFilter = ("csv\0*.csv\0");
+	opf.lpstrFilter = ("csv\0*.csv\0Png\0*.png\0");
 	opf.nFilterIndex = 2;
 	opf.lpstrFileTitle = NULL;
 	opf.nMaxFileTitle = 0;
@@ -170,10 +166,23 @@ LPSTR MainWindow::getFileName(HWND hWnd)
 	return GetOpenFileName(&opf) == TRUE ? opf.lpstrFile : nullptr;
 }
 
-//std::string MainWindow::getFileFormat(std::string file)
-//{
-//	if (file.size)
-//}
+std::string MainWindow::getFileFormat(std::string file)
+{
+	if (file.size() >= 4)
+	{
+		std::string format;
+		auto rIt = file.rbegin();
+		while (format.size() != 3)
+		{
+			format += *rIt;
+			rIt++;
+		}
+		std::reverse(format.begin(), format.end());
+		std::transform(format.begin(), format.end(), format.begin(), ::tolower);
+		return format;
+	}
+	return nullptr;
+}
 
 bool MainWindow::checkFile(std::string filePath)
 {

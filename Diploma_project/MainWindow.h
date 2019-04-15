@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include "Libs.h"
 #include <CommCtrl.h>
+#include "DigitizerWindow.h"
 
 #pragma comment(lib, "Comctl32.lib")
 

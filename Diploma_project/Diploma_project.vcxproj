@@ -123,18 +123,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DigitizerWindow.h" />
     <ClInclude Include="FileHandler.h" />
     <ClInclude Include="FunctionHandler.h" />
     <ClInclude Include="Libs.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="resource1.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DigitizerWindow.cpp" />
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="FunctionHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="Matrix.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Diploma_project1.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
