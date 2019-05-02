@@ -15,7 +15,7 @@ private:
 	static int counter;
 	std::string newFilePath;
 	HWND hWnd;
-	static bool clicked, lcFlag;
+	static bool clicked, lcFlag, redraw;
 	static RECT wndRect;
 	static std::vector<std::pair<POINT, Type>> pntVector;
 	static std::vector<POINT> xPoints, values;

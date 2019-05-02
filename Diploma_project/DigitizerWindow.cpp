@@ -1,7 +1,7 @@
 #include "DigitizerWindow.h"
 
 constexpr unsigned int H_OKBUTTON = 3002;
-bool DigitizerWindow::clicked;
+bool DigitizerWindow::clicked, DigitizerWindow::redraw;
 bool DigitizerWindow::lcFlag;
 int DigitizerWindow::counter = 0;
 std::string DigitizerWindow::path;
@@ -82,23 +82,26 @@ LRESULT DigitizerWindow::thisWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 		{
 		case WM_CREATE:
 		{
-			HWND hOkButton = CreateWindow("button", "Calculate", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON, 600, 400, 90, 20, hWnd, (HMENU)H_OKBUTTON, (HINSTANCE)GetModuleHandle(NULL), NULL);
+			
 
 			LONG hInstance = GetWindowLong(hWnd, GWL_HINSTANCE);
-			LPCTSTR	cnvsWndClass = TEXT("Canvas subclass");
-			LPCTSTR cnvsWndClass_1 = TEXT("Canvas subclass_1");
+			LPCTSTR cnvsWndClass = TEXT("Canvas subclass_");
+			cnvsWndClass += counter;
+			/*LPCTSTR	cnvsWndClass = TEXT("Canvas subclass");
+			LPCTSTR cnvsWndClass_1 = TEXT("Canvas subclass_1");*/
 			HWND hCnvsWnd = NULL;
 
-			switch (counter)
-			{
-			case 0:
-			{
-				if (!RegMyWindowClass((HINSTANCE)hInstance, cnvsWndClass, (HBRUSH)COLOR_WINDOWFRAME))
-					return 1;
-				hCnvsWnd = CreateWindow(cnvsWndClass, TEXT("Canvas"),
-					WS_VISIBLE | WS_BORDER | WS_CHILD, 0, 0, screen_rect.right - screen_rect.left, 400, hWnd, NULL,
-					(HINSTANCE)hInstance, this);
-			}
+			//switch (counter)
+			//{
+			//case 0:
+			//{
+			if (!RegMyWindowClass((HINSTANCE)hInstance, cnvsWndClass, (HBRUSH)COLOR_WINDOWFRAME))
+				return 1;
+			hCnvsWnd = CreateWindow(cnvsWndClass, TEXT("Canvas"),
+				WS_VISIBLE | WS_BORDER | WS_CHILD, 0, 0, screen_rect.right - screen_rect.left, abs(screen_rect.top - screen_rect.bottom) - 100, hWnd, NULL,
+				(HINSTANCE)hInstance, this);
+			HWND hOkButton = CreateWindow("button", "Calculate", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON | WS_DISABLED, 600, abs(screen_rect.top - screen_rect.bottom) - 70, 90, 20, hWnd, (HMENU)H_OKBUTTON, (HINSTANCE)GetModuleHandle(NULL), NULL);
+			/*}
 			break;
 			default:
 			{
@@ -109,10 +112,11 @@ LRESULT DigitizerWindow::thisWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 					(HINSTANCE)hInstance, this);
 			}
 			break;
-			}
+			}*/
 
 			GetWindowRect(hCnvsWnd, &wndRect);
 			SetWindowSubclass(hCnvsWnd, childProc, 0, 0);
+
 		}
 		break;
 		case WM_MOVE:
@@ -196,7 +200,7 @@ LRESULT DigitizerWindow::childProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 		std::wstring wstr(path.begin(), path.end());
 
-		if (lcFlag)
+		if (lcFlag || redraw)
 		{
 
 			Gdiplus::Graphics graphics(hDC);
@@ -204,7 +208,7 @@ LRESULT DigitizerWindow::childProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 
 			graphics.DrawImage(&gdiImage, 0, 0, wndRect.right - wndRect.left, wndRect.bottom - wndRect.top);
 
-			lcFlag = false;
+			lcFlag = redraw = false;
 		}
 
 		if (xPoints.size() == 2)
@@ -276,11 +280,20 @@ LRESULT DigitizerWindow::childProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 		break;
 		default:
 		{
-			values.push_back(pt);
+			if (values.size() < 20)
+			{
+				values.push_back(pt);
+				redraw = true;
+				UpdateWindow(GetParent(hWnd));
+			}
 		}
 		break;
 		}
-
+		if (values.size() == 20 && xPoints.size() == 2 && yPoints.size() == 2)
+		{
+			HWND hOkButton = FindWindowEx(GetParent(hWnd), NULL, "button", NULL);
+			EnableWindow(hOkButton, TRUE);
+		}
 		InvalidateRect(hWnd, &wndRect, false);
 		UpdateWindow(hWnd);
 
@@ -295,8 +308,10 @@ DigitizerWindow::DigitizerWindow(HINSTANCE hInstance, LPCTSTR className, std::st
 {
 	clicked = false;
 	lcFlag = true;
+	redraw = true;
 	type = Type::X_axis;
 	path = fileName;
+	newFilePath = "";
 
 	WNDCLASS wcWindowClass = { 0 };
 	wcWindowClass.lpfnWndProc = (WNDPROC)MessageRouter;

@@ -4,7 +4,7 @@
 
 
 FunctionHandler::FunctionHandler(std::initializer_list<Matrix_Plan> list, std::vector<std::string> values): matrices{list},
-Qmax{ std::atof(values.at(2).c_str()) }, deltaT{ std::atof(values.at(3).c_str()) }, Th{ std::atof(values.at(4).c_str()) }
+Qmax{ std::atof(values.at(2).c_str()) + 1.682*std::atof(values.at(3).c_str()) }, deltaT{ std::atof(values.at(4).c_str()) }, Th{ std::atof(values.at(6).c_str()) }
 {}
 
 void FunctionHandler::initialize_graphs(std::unique_ptr<TApplication>& App)
@@ -24,7 +24,7 @@ void FunctionHandler::initialize_graphs(std::unique_ptr<TApplication>& App)
 	{
 		x_current[i] = i;
 		y_current[i] = matrices.at(0).get_value(x_current[i], deltaT, Th);
-		y_voltage[i] = matrices.at(1).get_value(y_current[i], deltaT, Th);
+		y_voltage[i] = matrices.at(1).get_value(x_current[i], deltaT, Th);
 		y_consumption[i] = y_current[i] * y_voltage[i];
 	}
 

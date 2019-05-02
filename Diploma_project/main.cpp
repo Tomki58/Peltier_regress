@@ -50,7 +50,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	int y = screen_rect.bottom / 2 - 75;
 
 	// создание диалогового окна
-	HWND hWnd = CreateWindow(lpzClass, TEXT("Chart"),
+	HWND hWnd = CreateWindow(lpzClass, TEXT("Peltier Regress"),
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 500, 400, NULL, NULL,
 		hInstance, NULL);
 
@@ -112,11 +112,11 @@ LRESULT CALLBACK WndProc(
 		case GRAPH_BUTTON_ID:
 		{
 			FileHandler fh_current(options.at(0));
-			Matrix_Plan mtrx_current{ 3 };
+			Matrix_Plan mtrx_current{ 3, options };
 			mtrx_current.read_from_file(fh_current);
 			mtrx_current.count();
 			mtrx_current.assessment();
-			Matrix_Plan mtrx_voltage{ 3 };
+			Matrix_Plan mtrx_voltage{ 3, options };
 			FileHandler fh_voltage(options.at(1));
 			mtrx_voltage.read_from_file(fh_voltage);
 			mtrx_voltage.count();
@@ -126,7 +126,7 @@ LRESULT CALLBACK WndProc(
 			hFnc->initialize_graphs(tAPP);
 		}
 		break;
-		// Обработка нажатия на кнопку Browse
+		// Обработка нажатия на кнопку Options
 		case OPTIONS_BUTTON_ID:
 		{
 			MainWindow mainWnd((HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), const_cast<LPCTSTR>(optWndClass));
@@ -134,26 +134,37 @@ LRESULT CALLBACK WndProc(
 			options = mainWnd.getOptions();
 
 			HWND childWnd = FindWindowEx(hWnd, NULL, "BUTTON", NULL);
-			EnableWindow(childWnd, TRUE);
 			if (!options.empty())
 			{
 				while (HWND hDelWnd = FindWindowEx(hWnd, NULL, WC_LISTVIEW, NULL))
 					DestroyWindow(hDelWnd);
 
-				
 
-				HWND hWndLV_1 = CreateWindow(WC_LISTVIEW, "", WS_CHILD | LVS_REPORT | WS_VISIBLE,
-					10, 10, 200, 200, hWnd, (HMENU)IDC_LISTVIEW_ID_1, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
-				HWND hWndLV_2 = CreateWindow(WC_LISTVIEW, "", WS_CHILD | LVS_REPORT | WS_VISIBLE,
-					250, 10, 200, 200, hWnd, (HMENU)IDC_LISTVIEW_ID_2, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
-				ListView_SetExtendedListViewStyleEx(hWndLV_1, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-				ListView_SetExtendedListViewStyleEx(hWndLV_2, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
-				SetListViewColumns(hWndLV_1, 2, 6, const_cast<char**>(header));
-				SetListViewColumns(hWndLV_2, 2, 6, const_cast<char**>(header));
-				FileHandler fh_listView1{ options.at(0) };
-				FileHandler fh_listView2{ options.at(1) };
-				AddListViewItems(hWndLV_1, 2, 6, fh_listView1.get_pair());
-				AddListViewItems(hWndLV_2, 2, 6, fh_listView2.get_pair());
+				try
+				{
+					// Заполнение ListView
+					HWND hWndLV_1 = CreateWindow(WC_LISTVIEW, "", WS_CHILD | LVS_REPORT | WS_VISIBLE,
+						10, 10, 200, 200, hWnd, (HMENU)IDC_LISTVIEW_ID_1, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+					HWND hWndLV_2 = CreateWindow(WC_LISTVIEW, "", WS_CHILD | LVS_REPORT | WS_VISIBLE,
+						250, 10, 200, 200, hWnd, (HMENU)IDC_LISTVIEW_ID_2, (HINSTANCE)GetWindowLong(hWnd, GWL_HINSTANCE), NULL);
+
+					FileHandler fh_listView1{ options.at(0) };
+					FileHandler fh_listView2{ options.at(1) };
+
+					ListView_SetExtendedListViewStyleEx(hWndLV_1, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+					ListView_SetExtendedListViewStyleEx(hWndLV_2, 0, LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+					SetListViewColumns(hWndLV_1, 2, 6, const_cast<char**>(header));
+					SetListViewColumns(hWndLV_2, 2, 6, const_cast<char**>(header));
+					AddListViewItems(hWndLV_1, 2, 6, fh_listView1.get_pair());
+					AddListViewItems(hWndLV_2, 2, 6, fh_listView2.get_pair());
+
+					EnableWindow(childWnd, TRUE);
+				}
+				catch (std::runtime_error& err)
+				{
+					MessageBox(hWnd, err.what(), "Error", NULL);
+					EnableWindow(childWnd, FALSE);
+				}
 			}
 			else EnableWindow(childWnd, FALSE);
 		}
@@ -164,11 +175,10 @@ LRESULT CALLBACK WndProc(
 	case WM_DESTROY:
 	{
 		tAPP->Terminate();
-		PostQuitMessage(0);  // реакция на сообщение
+		PostQuitMessage(0);
 	}
 		break;
 	default:
-		// все сообщения не обработанные Вами обработает сама Windows
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
@@ -200,27 +210,24 @@ BOOL WINAPI AddListViewItems(HWND hWndLV, int colNum, int textMaxLen, const std:
 {
 	LVITEM lvI;
 
-	// Initialize LVITEM members that are common to all items.
-	lvI.pszText = LPSTR_TEXTCALLBACK; // Sends an LVN_GETDISPINFO message.
+	lvI.pszText = LPSTR_TEXTCALLBACK;
 	lvI.mask = LVIF_TEXT | LVIF_IMAGE | LVIF_STATE;
 	lvI.stateMask = 0;
 	lvI.iSubItem = 0;
 	lvI.state = 0;
 
-	// Initialize LVITEM members that are different for each item.
 	for (int index = 0; index < num_value.size(); index++)
 	{
 		lvI.iItem = index;
 		lvI.iImage = index;
 
 		char first_val[3];
-		char second_val[10];
+		char second_val[15];
 
 		_itoa_s(num_value[index].first, first_val, 10);
 		sprintf_s(second_val, "%f", num_value[index].second);
 
 
-		// Insert items into the list.
 		if (ListView_InsertItem(hWndLV, &lvI) == -1)
 			return FALSE;
 		ListView_SetItemText(hWndLV, index, 0, first_val);

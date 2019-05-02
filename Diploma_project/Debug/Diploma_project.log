@@ -1,1 +1,6 @@
-﻿  Diploma_project.vcxproj -> C:\Users\Admin\Documents\GitHub\Peltier_regress\Debug\Diploma_project.exe
+﻿  FileHandler.cpp
+  main.cpp
+c:\users\admin\documents\github\peltier_regress\diploma_project\digitizerwindow.h(11): warning C4091: static : пропускается слева от "DigitizerWindow::Type", когда ни одна переменная не объявлена
+c:\users\admin\documents\github\peltier_regress\diploma_project\main.cpp(219): warning C4018: <: несоответствие типов со знаком и без знака
+  Создание кода...
+  Diploma_project.vcxproj -> C:\Users\Admin\Documents\GitHub\Peltier_regress\Debug\Diploma_project.exe

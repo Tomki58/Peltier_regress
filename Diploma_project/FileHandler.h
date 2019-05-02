@@ -9,7 +9,7 @@ public:
 	FileHandler(std::string);
 	bool is_open() { return file.is_open(); }
 	std::vector<std::pair<int, double>> get_pair();
-	~FileHandler();
+	~FileHandler() { file.close(); }
 private:
 	std::fstream file;
 };

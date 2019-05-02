@@ -1,6 +1,6 @@
 #include "Matrix.h"
 
-Matrix_Plan::Matrix_Plan(unsigned int var_count) 
+Matrix_Plan::Matrix_Plan(unsigned int var_count, std::vector<std::string> options) : options{options}
 {
 	// определение размерности матрицы
 	core_points = pow(2, var_count);
@@ -222,7 +222,6 @@ bool Matrix_Plan::assessment()
 // Дебажные методы
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-// поменять в соответствии со статистической пригодностью коэффициентов
 double Matrix_Plan::get_value(double x, double deltaT, double Th)
 {
 	double result = 0.0;
@@ -230,17 +229,17 @@ double Matrix_Plan::get_value(double x, double deltaT, double Th)
 	if (coeffs.at(0).second)
 		result += coeffs.at(0).first;
 	if (coeffs.at(1).second)
-		result += coeffs.at(1).first * x;
+		result += coeffs.at(1).first * ((x - std::atof(options.at(2).c_str())) / std::atof(options.at(3).c_str()));
 	if (coeffs.at(2).second)
-		result += coeffs.at(2).first * deltaT;
+		result += coeffs.at(2).first * ((deltaT - std::atof(options.at(4).c_str())) / std::atof(options.at(5).c_str()));
 	if (coeffs.at(3).second)
-		result += coeffs.at(3).first * Th;
+		result += coeffs.at(3).first * ((Th - std::atof(options.at(6).c_str())) / std::atof(options.at(7).c_str()));
 	if (coeffs.at(8).second)
-		result += coeffs.at(8).first * pow(x, 2);
+		result += coeffs.at(8).first * pow(((x - std::atof(options.at(2).c_str())) / std::atof(options.at(3).c_str())) , 2);
 	if (coeffs.at(9).second)
-		result += coeffs.at(9).first * pow(deltaT, 2);
+		result += coeffs.at(9).first * pow(((deltaT - std::atof(options.at(4).c_str())) / std::atof(options.at(5).c_str())), 2);
 	if (coeffs.at(10).second)
-		result += coeffs.at(10).first * pow(Th, 2);
+		result += coeffs.at(10).first * pow(((Th - std::atof(options.at(6).c_str())) / std::atof(options.at(7).c_str())), 2);
 
 	return result;
 }

@@ -24,13 +24,14 @@ private:
 	std::vector<std::pair<double, bool>> coeffs;						// значения коэффициентов
 	std::vector<double> disp;											// значения дисперсий
 	std::vector<double> trust_intrv;									// абсолютные значения доверительных интервалов
+	std::vector<std::string> options;
 
 	static double fisher_table[20][11];
 
 	// локальные функции
 	std::vector<double> new_func_values();
 public:
-	explicit Matrix_Plan(unsigned int var_count);						// конструктор инициалзации
+	explicit Matrix_Plan(unsigned int var_count, std::vector<std::string> options);						// конструктор инициалзации
 	~Matrix_Plan();
 	double& operator()(size_t line, size_t col);						// значение по индексу
 	void enter_results();												// ввод экспериментальных данных
