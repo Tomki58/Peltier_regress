@@ -13,10 +13,6 @@ DigitizerWindow::Type DigitizerWindow::type;
 
 LRESULT CALLBACK DlgProc(HWND, UINT, WPARAM, LPARAM);
 
-// TODO:
-// Доработать лоигку оцифровщика
-// Пофиксить отрисовку линий
-
 void DigitizerWindow::getNextType(Type& type)
 {
 	switch (type)
@@ -52,32 +48,12 @@ ATOM DigitizerWindow::RegMyWindowClass(HINSTANCE hInstance, LPCTSTR lpzClassName
 	return RegisterClass(&wcWindowClass); // регистраци¤ класса
 }
 
-LRESULT DigitizerWindow::MessageRouter(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	DigitizerWindow* digitWnd;
-	HWND handler;
-
-
-
-	if (msg == WM_CREATE)
-	{
-		/*MessageBox(hWnd, "Error", NULL, NULL);*/
-		digitWnd = (DigitizerWindow*)(((LPCREATESTRUCT)lParam)->lpCreateParams);
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)digitWnd);
-	}
-	else
-		digitWnd = (DigitizerWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-
-	return digitWnd->thisWndProc(hWnd, msg, wParam, lParam);
-}
 
 LRESULT DigitizerWindow::thisWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	{
 		RECT screen_rect;
 		GetWindowRect(hWnd, &screen_rect);
-		// локальные переменные
-		// выборка и обработка сообщений
 		switch (msg)
 		{
 		case WM_CREATE:
@@ -304,7 +280,7 @@ LRESULT DigitizerWindow::childProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	}
 }
 
-DigitizerWindow::DigitizerWindow(HINSTANCE hInstance, LPCTSTR className, std::string fileName)
+DigitizerWindow::DigitizerWindow(HINSTANCE hInstance, LPCTSTR className, std::string fileName) : WndClass{hInstance, className}
 {
 	clicked = false;
 	lcFlag = true;
@@ -312,15 +288,6 @@ DigitizerWindow::DigitizerWindow(HINSTANCE hInstance, LPCTSTR className, std::st
 	type = Type::X_axis;
 	path = fileName;
 	newFilePath = "";
-
-	WNDCLASS wcWindowClass = { 0 };
-	wcWindowClass.lpfnWndProc = (WNDPROC)MessageRouter;
-	wcWindowClass.style = CS_HREDRAW | CS_VREDRAW;
-	wcWindowClass.hInstance = hInstance;
-	wcWindowClass.lpszClassName = className;
-	wcWindowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcWindowClass.hbrBackground = (HBRUSH)COLOR_APPWORKSPACE;
-	RegisterClass(&wcWindowClass);
 
 	RECT screen_rect; 
 	GetWindowRect(GetDesktopWindow(), &screen_rect);
@@ -341,7 +308,7 @@ DigitizerWindow::~DigitizerWindow()
 	DestroyWindow(hWnd);
 }
 
-std::string DigitizerWindow::run()
+std::string DigitizerWindow::digRun()
 {
 	clicked = false;
 	lcFlag = true;

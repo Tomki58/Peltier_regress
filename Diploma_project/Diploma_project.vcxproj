@@ -127,18 +127,22 @@
     <ClInclude Include="FileHandler.h" />
     <ClInclude Include="FunctionHandler.h" />
     <ClInclude Include="Libs.h" />
-    <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="MainWndClass.h" />
+    <ClInclude Include="OptionsWnd.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="resource1.h" />
+    <ClInclude Include="WndClass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DigitizerWindow.cpp" />
     <ClCompile Include="FileHandler.cpp" />
     <ClCompile Include="FunctionHandler.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="MainWndClass.cpp" />
+    <ClCompile Include="OptionsWnd.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="WndClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Diploma_project1.rc" />

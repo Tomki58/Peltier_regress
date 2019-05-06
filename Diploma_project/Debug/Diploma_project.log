@@ -1,6 +1,16 @@
-﻿  FileHandler.cpp
+﻿  DigitizerWindow.cpp
+c:\users\admin\documents\github\peltier_regress\diploma_project\digitizerwindow.h(12): warning C4091: static : пропускается слева от "DigitizerWindow::Type", когда ни одна переменная не объявлена
+  MainWndClass.cpp
+c:\users\admin\documents\github\peltier_regress\diploma_project\digitizerwindow.h(12): warning C4091: static : пропускается слева от "DigitizerWindow::Type", когда ни одна переменная не объявлена
+c:\users\admin\documents\github\peltier_regress\diploma_project\mainwndclass.cpp(171): warning C4018: <: несоответствие типов со знаком и без знака
+  OptionsWnd.cpp
+c:\users\admin\documents\github\peltier_regress\diploma_project\digitizerwindow.h(12): warning C4091: static : пропускается слева от "DigitizerWindow::Type", когда ни одна переменная не объявлена
+c:\users\admin\documents\github\peltier_regress\diploma_project\optionswnd.cpp(45): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\admin\documents\github\peltier_regress\diploma_project\optionswnd.cpp(113): warning C4018: <: несоответствие типов со знаком и без знака
+  WndClass.cpp
   main.cpp
-c:\users\admin\documents\github\peltier_regress\diploma_project\digitizerwindow.h(11): warning C4091: static : пропускается слева от "DigitizerWindow::Type", когда ни одна переменная не объявлена
-c:\users\admin\documents\github\peltier_regress\diploma_project\main.cpp(219): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\admin\documents\github\peltier_regress\diploma_project\digitizerwindow.h(12): warning C4091: static : пропускается слева от "DigitizerWindow::Type", когда ни одна переменная не объявлена
   Создание кода...
+c:\users\admin\documents\github\peltier_regress\diploma_project\optionswnd.cpp(160): warning C4715: OptionsWnd::childProc: значение возвращается не при всех путях выполнения
+c:\users\admin\documents\github\peltier_regress\diploma_project\digitizerwindow.cpp(281): warning C4715: DigitizerWindow::childProc: значение возвращается не при всех путях выполнения
   Diploma_project.vcxproj -> C:\Users\Admin\Documents\GitHub\Peltier_regress\Debug\Diploma_project.exe

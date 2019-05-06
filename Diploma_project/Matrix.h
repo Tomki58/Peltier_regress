@@ -39,7 +39,6 @@ public:
 	void print();														// вывод матрицы на печать
 	void count();														// подсчет коэффициентов
 	bool assessment();													// оценка модели
-	// Дебажные методы
-	double get_value(double x, double deltaT, double Th);
-	static void fill_table(FILEPATH);
+	double get_value(double x, double deltaT, double Th);				// получение значения функции
+	static void fill_table(FILEPATH);									// заполнение таблицы Фишера
 };
